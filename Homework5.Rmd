@@ -105,10 +105,8 @@ https://github.com/ishitapethkar/stor674-homework5.git
 ```bash
 git clone https://github.com/ishitapethkar/stor674-homework5.git
 git add .
-
-
-
-
+git commit -m "Initial commit"
+git push
 ```
 
 **c)** (2 points) Create a new branch called `docker-build` where you will develop your Dockerfile. What command did you use? Why is it good practice to use a separate branch for development instead of working directly on `main`?
@@ -116,14 +114,11 @@ git add .
 **Answer:**
 
 ```bash
-# Command to create and switch to branch
-
-
+git checkout -b docker-build
 ```
 
 **Explanation:**
-
-<!-- Why use a separate branch? -->
+It is good practice to use a separate branch for development to isolate changes, allowing for safer experimentation without affecting the stable main branch. This approach facilitates collaboration, code review, and testing before merging changes back into main.
 
 
 ## Question 2.1: Understanding compute_bench.py (5 points)
@@ -131,15 +126,15 @@ git add .
 **a)** (3 points) Read the `compute_bench.py` script. What does this script do? What is its main purpose?
 
 **Answer:**
-
-<!-- Write your answer here -->
+The compute_bench.py script benchmarks the performance of CPU and GPU computations using the PyTorch library. It measures the time taken to perform matrix multiplications on both CPU and GPU (if available) for varying sizes of matrices. The main purpose of the script is to provide insights into the computational capabilities of the hardware, allowing users to compare the performance of CPU versus GPU for large-scale numerical operations commonly used in machine learning and scientific computing.
 
 
 **b)** (2 points) What Python packages does `compute_bench.py` require?
 
 **Answer:**
-
-<!-- Write your answer here -->
+The compute_bench.py script requires the following Python packages: 
+- torch
+- time
 
 
 ## Question 2.2: Create a Dockerfile (10 points)
@@ -168,12 +163,20 @@ Create a Dockerfile that:
 3. Write the Dockerfile content below:
 
 ```dockerfile
-# Paste your Dockerfile content here
+# (Debian Based)
+FROM python:3.9-slim
 
+# Set working directory
+WORKDIR /scripts
 
+# Install torch dependency
+RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
+# Copy the compute_bench.py script into the container
+COPY compute_bench.py .
 
-
+# Default command to run the script
+CMD ["python", "compute_bench.py"]
 ```
 
 **Grading Criteria:**
@@ -189,13 +192,15 @@ Create a Dockerfile that:
 **Answer:**
 
 ```bash
-# Your command here
+docker build --platform linux/amd64 -t stor674hw5 .
 
 ```
 
 **Explanation:**
-
-<!-- Explain each part of your command -->
+docker build: This command tells Docker to build an image from a Dockerfile.
+--platform linux/amd64: This flag specifies the target platform for the image, ensuring compatibility with Linux systems, which is important since Longleaf runs Linux.
+-t stor674hw5: The -t flag tags the image with a name (stor674hw5), making it easier to reference later.
+.: The dot at the end indicates the build context, which is the current directory where the Dockerfile and other necessary files are located.
 
 
 **b)** (4 points) What command did you use to run your Docker image locally to test it? Include the output you received.
@@ -203,23 +208,30 @@ Create a Dockerfile that:
 **Answer:**
 
 ```bash
-# Your command here
-
+docker run --rm stor674hw5
 ```
 
 **Output:**
 
 ```
-# Paste the output here
+No GPU available, running on CPU only
 
+CPU Computations:
+Time for 10,000,000 elements: 1.7626 seconds
+Time for 100,000,000 elements: 9.8821 seconds
 
+Small sample of 10 random numbers:
+tensor([-0.1326, -1.5500,  1.1859,  1.5597,  0.7008, -0.4011, -1.1648,  0.1153,
+        -0.3273, -0.3363])
+
+Saved data to mydata.pt
 ```
 
 **c)** (3 points) Were there any issues you encountered during the build or test? How did you resolve them?
 
 **Answer:**
 
-<!-- Write your answer here -->
+No significant issues were encountered during the build or test of the Docker image. The build process completed successfully, and the container ran as expected, executing the compute_bench.py script without errors. If any issues had arisen, such as missing dependencies or incorrect file paths, they would have been resolved by reviewing the Dockerfile for accuracy and ensuring all necessary files were correctly copied into the container.
 
 
 ## Question 2.4: Version Control Your Docker Build (10 points)
@@ -231,10 +243,8 @@ Now that you have a working Dockerfile, let's commit it and merge it into the ma
 **Answer:**
 
 ```bash
-# Commands to add and commit Dockerfile
-
-
-
+git add Dockerfile
+git commit -m "add:Dockerfile"
 ```
 
 **b)** (4 points) Switch to the `main` branch and merge the `docker-build` branch into it. What commands did you use? Paste the merge message or output.
@@ -242,19 +252,18 @@ Now that you have a working Dockerfile, let's commit it and merge it into the ma
 **Answer:**
 
 ```bash
-# Commands to switch branch and merge
-
-
-
-
+git checkout main
+git merge docker-build
 ```
 
 **Merge Output:**
 
 ```
-# Paste merge output here
-
-
+Updating add972f..7068087
+Fast-forward
+ Dockerfile | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+ create mode 100644 Dockerfile
 ```
 
 **c)** (3 points) Push your changes to GitHub. Verify that your repository now contains the Dockerfile on the main branch. What command did you use to push?
@@ -262,9 +271,7 @@ Now that you have a working Dockerfile, let's commit it and merge it into the ma
 **Answer:**
 
 ```bash
-# Command to push to GitHub
-
-
+git push origin main
 ```
 
 **Verification:** Visit your GitHub repository in a web browser and confirm the Dockerfile is visible. ✓
@@ -275,8 +282,7 @@ Now that you have a working Dockerfile, let's commit it and merge it into the ma
 **a)** (3 points) Create a Docker Hub account (if you don't have one) and provide your Docker Hub username.
 
 **Docker Hub Username:**
-
-<!-- Your username here -->
+ishpet
 
 
 **b)** (4 points) Tag your image appropriately and push it to Docker Hub. What commands did you use?
@@ -284,11 +290,8 @@ Now that you have a working Dockerfile, let's commit it and merge it into the ma
 **Answer:**
 
 ```bash
-# Commands you used
-
-
-
-
+docker tag stor674hw5 ishpet/compute-bench-test:latest
+docker push ishpet/compute-bench-test:latest
 ```
 
 **c)** (3 points) Provide the full Docker Hub image URL/name that others can use to pull your image.
@@ -296,7 +299,7 @@ Now that you have a working Dockerfile, let's commit it and merge it into the ma
 **Image URL:**
 
 ```
-# Format: username/imagename:tag
+ishpet/compute-bench-test:latest
 
 ```
 
@@ -311,15 +314,13 @@ In this section, you will download your Docker image using Apptainer on UNC's Lo
 **a)** (3 points) What is Apptainer (formerly Singularity) and why is it used on HPC systems instead of Docker?
 
 **Answer:**
-
-<!-- Write your answer here -->
+Apptainer is an open-source containerization platform specifically designed for high-performance computing (HPC) environments. It allows users to create and run containers that encapsulate applications and their dependencies, ensuring consistent execution across different systems. Apptainer is preferred over Docker in HPC settings because it addresses several limitations of Docker, such as requiring root privileges to run containers, which poses security risks on shared systems. Apptainer operates without needing elevated permissions, integrates seamlessly with HPC job schedulers like Slurm, and supports native access to host resources like GPUs and file systems, making it more suitable for the multi-user, resource-intensive nature of HPC clusters.
 
 
 **b)** (2 points) What does "Bring Your Own Environment" (BYOE) mean in the context of HPC and containers?
 
 **Answer:**
-
-<!-- Write your answer here -->
+"Bring Your Own Environment" (BYOE) in the context of HPC and containers refers to the practice of allowing users to create and deploy their own customized software environments encapsulated within containers. This approach enables researchers and developers to package specific versions of applications, libraries, and dependencies tailored to their computational needs, ensuring reproducibility and consistency across different HPC systems. BYOE empowers users to bypass the limitations of pre-installed software on HPC clusters, facilitating greater flexibility and control over their computing environments.
 
 
 ## Question 3.2: Convert Docker Image to Apptainer (10 points)
@@ -329,9 +330,8 @@ In this section, you will download your Docker image using Apptainer on UNC's Lo
 **Answer:**
 
 ```bash
-# Command to pull/convert Docker image to Apptainer
-
-
+modeule load apptainer
+apptainer pull compute-bench-test.sif docker://ishpet/compute-bench-test:latest
 ```
 
 **b)** (3 points) What is the name of the Apptainer image file (.sif) that was created?
@@ -339,7 +339,7 @@ In this section, you will download your Docker image using Apptainer on UNC's Lo
 **Answer:**
 
 ```
-# Filename here
+compute-bench-test.sif
 
 ```
 
@@ -348,9 +348,7 @@ In this section, you will download your Docker image using Apptainer on UNC's Lo
 **Answer:**
 
 ```bash
-# Command to run Apptainer image
-
-
+apptainer shell compute-bench-test.sif
 ```
 
 ## Question 3.3: Create Slurm Job Script (12 points)
@@ -373,17 +371,24 @@ Create a Slurm job script that runs your containerized `compute_bench.py` using 
 
 ```bash
 #!/bin/bash
+#SBATCH --job-name=compute-bench-test       
+#SBATCH --output=compute-bench-test.out 
+#SBATCH --error=compute-bench-test.err  
+#SBATCH --mem=5g
+#SBATCH -n 1
+#SBATCH -t 01-00:00:00
+#SBATCH -p l40-gpu
+#SBATCH --qos=gpu_access
+#SBATCH --gres=gpu:1
 
-# Paste your Slurm script here
+# Load Apptainer module
+module load apptainer
 
+# Path to Apptainer image
+IMAGE="/nas/longleaf/home/ishpet/stor674hw5/compute-bench.sif"
 
-
-
-
-
-
-
-
+# Run the container
+apptainer exec $IMAGE python compute_bench.py
 ```
 
 **Grading Criteria:**
@@ -398,8 +403,7 @@ Create a Slurm job script that runs your containerized `compute_bench.py` using 
 **Answer:**
 
 ```bash
-# Command here
-
+sbatch run_compute_bench.sh
 ```
 
 **b)** (2 points) Provide the output of your job. Paste the contents of your Slurm output file (e.g., `slurm-jobid.out`). Also, add your Slurm script (`run_compute_bench.sh`) to your GitHub repository and push it.
