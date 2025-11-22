@@ -388,7 +388,7 @@ module load apptainer
 IMAGE="/nas/longleaf/home/ishpet/stor674hw5/compute-bench.sif"
 
 # Run the container
-apptainer exec $IMAGE python compute_bench.py
+apptainer exec $IMAGE python /nas/longleaf/home/ishpet/stor674hw5/compute_bench.py
 ```
 
 **Grading Criteria:**
@@ -411,31 +411,37 @@ sbatch run_compute_bench.sh
 **Job Output:**
 
 ```
-# Paste your job output here
+GPU available: NVIDIA A100-PCIE-40GB MIG 2g.10gb
 
+CPU Computations:
+Time for 10,000,000 elements: 0.1393 seconds
+Time for 100,000,000 elements: 1.0628 seconds
 
+GPU Computations:
+Time for 10,000,000 elements: 0.5746 seconds
+Time for 100,000,000 elements: 0.0074 seconds
 
+Small sample of 10 random numbers:
+tensor([ 0.3367,  0.1288,  0.2345,  0.2303, -1.1229, -0.1863,  2.2082, -0.6380,
+         0.4617,  0.2674])
 
-
-
-
-
+Saved data to mydata.pt
 ```
 
 **GitHub Verification:** ✓ Pushed `run_compute_bench.sh` to repository
 
 **c)** (BONUS: +2 points) Include a screenshot showing your job in the Slurm queue or completed job information using `squeue` or `sacct`. Also show that your job successfully utilized a GPU (if you requested one).
 
----
+```bash
+squeue -u $ishpet
+```
 
 # Part 4: Reflection and Best Practices (Optional - Extra Credit: 5 points)
 
 **Question 4.1:** Reflect on the workflow you just completed (Git → Docker → HPC). How does this approach improve reproducibility in computational research? What are some advantages and potential challenges?
 
 **Answer:**
-
-<!-- Write your answer here -->
-
+The workflow of using Git for version control, Docker for containerization, and HPC for execution significantly enhances reproducibility in computational research. By using Git, researchers can track changes to their codebase, ensuring that every modification is documented and reversible. Docker containers encapsulate the entire software environment, including dependencies, which eliminates discrepancies between different computing environments. This means that code can be run consistently across various systems, from local machines to HPC clusters like Longleaf. 
 
 ---
 
@@ -443,18 +449,18 @@ sbatch run_compute_bench.sh
 
 Before submitting, make sure you have:
 
-- [ ] Completed all questions in Part 1 (Git/GitHub concepts)
-- [ ] **Created a GitHub repository with all your project files**
-- [ ] **Practiced branching and merging in your Git workflow**
-- [ ] Created a Dockerfile with CUDA support for GPU computing
-- [ ] Built and tested your Docker image locally (Linux container on macOS/Windows)
-- [ ] Pushed your image to Docker Hub
-- [ ] Provided your Docker Hub image URL
-- [ ] Created a Slurm job script
-- [ ] Successfully ran your job on Longleaf
-- [ ] **Pushed all files (Dockerfile, Slurm script, completed Rmd) to GitHub**
-- [ ] Included all output and screenshots
-- [ ] Compiled this Rmd file to HTML or PDF
+- [x] Completed all questions in Part 1 (Git/GitHub concepts)
+- [x] **Created a GitHub repository with all your project files**
+- [x] **Practiced branching and merging in your Git workflow**
+- [x] Created a Dockerfile with CUDA support for GPU computing
+- [x] Built and tested your Docker image locally (Linux container on macOS/Windows)
+- [x] Pushed your image to Docker Hub
+- [x] Provided your Docker Hub image URL
+- [x] Created a Slurm job script
+- [x] Successfully ran your job on Longleaf
+- [x] **Pushed all files (Dockerfile, Slurm script, completed Rmd) to GitHub**
+- [x] Included all output and screenshots
+- [x] Compiled this Rmd file to HTML or PDF
 
 **Submission Instructions:**
 
